@@ -1,0 +1,22 @@
+{
+    "name": "hope/view",
+    "description": "Hope View engine",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shvorak Alexey",
+            "email": "dr.emerido@gmail.com"
+        }
+    ],
+    "require": {
+      "php": ">=5.6"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "4.6.*"
+    },
+    "autoload": {
+      "psr-4": {
+        "Hope\\View\\" : "dist/"
+      }
+    }
+}
