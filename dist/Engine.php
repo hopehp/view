@@ -26,6 +26,13 @@ namespace Hope\View
         protected $_folders;
 
         /**
+         * View files extension
+         *
+         * @var string
+         */
+        protected $_extension;
+
+        /**
          * Engine functions
          *
          * @var callable[]
@@ -86,6 +93,20 @@ namespace Hope\View
         public function hasFunction($name)
         {
             return isset($this->_functions[$name]);
+        }
+
+        /**
+         * Set view files extension
+         *
+         * @param string $name
+         *
+         * @return \Hope\View\Engine
+         */
+        public function setExtension($name)
+        {
+            $this->_extension = $name;
+
+            return $this;
         }
 
         /**
