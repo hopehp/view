@@ -23,7 +23,7 @@ namespace Hope\View
          *
          * @var Finder[]
          */
-        protected $_finders;
+        protected $_finders = [];
 
         /**
          * View files directories
@@ -181,6 +181,20 @@ namespace Hope\View
             $finder->attach($this);
 
             return $this;
+        }
+
+        /**
+         * Returns engine view file finders
+         *
+         * @return \Hope\View\Finder[]
+         */
+        public function getFinders()
+        {
+            if ($this->_finders === null) {
+                $this->addFinder(new Finder());
+            }
+
+            return $this->_finders;
         }
 
         /**

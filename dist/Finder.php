@@ -59,13 +59,13 @@ namespace Hope\View
                 throw new \InvalidArgumentException('Do not use separator in view name more than once');
             }
 
-            if (null === pathinfo($path, PATHINFO_EXTENSION)) {
-                $path .= '.' . $this->_engine->getExtension();
-            }
-
             $folders = $name !== $path
                 ? $this->_engine->getFolders($name)
                 : $this->_engine->getFolders();
+
+            if (null === pathinfo($path, PATHINFO_EXTENSION)) {
+                $path .= '.' . $this->_engine->getExtension();
+            }
 
             // Search file path in folders
             foreach ($folders as $folder) {
