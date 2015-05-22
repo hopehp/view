@@ -12,6 +12,15 @@ namespace Hope\View
     {
 
         /**
+         * View name
+         *
+         * @var string
+         */
+        protected $_name;
+
+        /**
+         * View file path
+         *
          * @var string
          */
         protected $_file;
@@ -51,12 +60,31 @@ namespace Hope\View
          */
         protected static $_flags;
 
-
-        public function __construct($file = null)
+        /**
+         * Create new view instance
+         *
+         * @param string            $file [optional]
+         * @param \Hope\View\Engine $engine
+         */
+        public function __construct($file = null, Engine $engine)
         {
             if (is_string($file)) {
-                $this->setFile($file);
+                file_exists($file)
+                    ? $this->setFile($file)
+                    : $this->setName($file);
             }
+
+            $this->_engine = $engine;
+        }
+
+        /**
+         * Render view
+         *
+         * @return string
+         */
+        public function __toString()
+        {
+            return $this->render();
         }
 
         /**
@@ -134,21 +162,20 @@ namespace Hope\View
          */
         protected function renderInternal()
         {
+            if (false === $this->exists()) {
+                throw new \Exception('View file does not exists');
+            }
+            // Extract view values
             extract($this->_data);
-
             // Short access to View instance
             $v = $this;
 
             ob_start();
-            if ($this->exists()) {
-                include($this->path());
-            } else {
-                throw new \Exception;
-            }
+            include($this->path());
             $content = ob_get_clean();
 
             if ($this->_layout) {
-
+                return $this->_layout->block('content', $content);
             }
 
             return $content;
@@ -318,6 +345,16 @@ namespace Hope\View
         }
 
         /**
+         * Set view name
+         *
+         * @param string $name
+         */
+        public function setName($name)
+        {
+            $this->setFile($this->_engine->find($name));
+        }
+
+        /**
          * Set view file
          *
          * @param string $file
@@ -330,7 +367,7 @@ namespace Hope\View
 
             return $this;
         }
-        
+
     }
 
 }

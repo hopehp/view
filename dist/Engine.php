@@ -19,6 +19,13 @@ namespace Hope\View
         protected $_theme;
 
         /**
+         * View file finders
+         *
+         * @var Finder[]
+         */
+        protected $_finders;
+
+        /**
          * View files directories
          *
          * @var array
@@ -30,7 +37,7 @@ namespace Hope\View
          *
          * @var string
          */
-        protected $_extension;
+        protected $_extension = 'php';
 
         /**
          * Engine functions
@@ -58,14 +65,44 @@ namespace Hope\View
             }
 
             if (is_string($name)) {
-                if (isset($this->_folders[$name])) {
-                    throw new \LogicException("Path named $name already registered");
+                if (false === isset($this->_folders[$name])) {
+                    $this->_folders[$name] = [];
                 }
-                $this->_folders[$name] = $path;
+                $this->_folders[$name][] = $path;
             } else {
                 $this->_folders[] = $path;
             }
             return $this;
+        }
+
+        /**
+         * Returns named folder path
+         *
+         * @param string $name
+         *
+         * @return string|bool
+         */
+        public function getFolder($name)
+        {
+            if (isset($this->_folders[$name])) {
+                return $this->_folders[$name];
+            }
+            return false;
+        }
+
+        /**
+         * Returns registered folders
+         *
+         * @param string $name [optional]
+         *
+         * @return string[]
+         */
+        public function getFolders($name = null)
+        {
+            if (is_string($name) && isset($this->_folders[$name])) {
+                return $this->_folders[$name];
+            }
+            return $this->_folders;
         }
 
         /**
@@ -104,9 +141,19 @@ namespace Hope\View
          */
         public function setExtension($name)
         {
-            $this->_extension = $name;
+            $this->_extension = ltrim($name, '.');
 
             return $this;
+        }
+
+        /**
+         * Returns view files extension
+         *
+         * @return string
+         */
+        public function getExtension()
+        {
+            return $this->_extension;
         }
 
         /**
@@ -119,6 +166,43 @@ namespace Hope\View
         public function getFunction($name)
         {
             return $this->_functions[$name];
+        }
+
+        /**
+         * Register files finder
+         *
+         * @param \Hope\View\Finder $finder
+         *
+         * @return \Hope\View\Engine
+         */
+        public function addFinder(Finder $finder)
+        {
+            $this->_finders[] = $finder;
+            $finder->attach($this);
+
+            return $this;
+        }
+
+        /**
+         * Find view file path
+         *
+         * @param string $name
+         *
+         * @return bool|string
+         */
+        public function find($name)
+        {
+            if (file_exists($name)) {
+                return $name;
+            }
+
+            foreach ($this->_finders as $finder) {
+                if ($path = $finder->find($name)) {
+                    return $path;
+                }
+            }
+
+            throw new \InvalidArgumentException('View file ' . $name . ' not found');
         }
 
         /**
