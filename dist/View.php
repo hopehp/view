@@ -51,6 +51,14 @@ namespace Hope\View
          */
         protected static $_flags;
 
+
+        public function __construct($file = null)
+        {
+            if (is_string($file)) {
+                $this->setFile($file);
+            }
+        }
+
         /**
          * Register data for view
          *
@@ -206,6 +214,31 @@ namespace Hope\View
         }
 
         /**
+         * Render batch to file
+         *
+         * @param string   $file
+         * @param array    $data
+         * @param callable $filter [optional]
+         *
+         * @return string
+         */
+        public function batch($file, $data, callable $filter = null)
+        {
+            $html = [];
+            $view = new View($file);
+
+            if ($data instanceof \IteratorAggregate) {
+                $data = $data->getIterator();
+            }
+
+            foreach ($data as $item) {
+               $html[] = $view->render($item);
+            }
+
+            return join("\n", $html);
+        }
+
+        /**
          * Escape string
          *
          * @param string    $value
@@ -284,6 +317,20 @@ namespace Hope\View
             return $this->filter($value, ...$funcs);
         }
 
+        /**
+         * Set view file
+         *
+         * @param string $file
+         *
+         * @return \Hope\View\View
+         */
+        public function setFile($file)
+        {
+            $this->_file = $file;
+
+            return $this;
+        }
+        
     }
 
 }
