@@ -210,7 +210,7 @@ namespace Hope\View
                 return $name;
             }
 
-            foreach ($this->_finders as $finder) {
+            foreach ($this->getFinders() as $finder) {
                 if ($path = $finder->find($name)) {
                     return $path;
                 }
